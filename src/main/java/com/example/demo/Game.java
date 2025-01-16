@@ -12,7 +12,9 @@ public class Game {
     private Long id;
 
     private String name;
+
     private String coverUrl;
+
     private String description;
 
     @Column(name = "is_favorite")
@@ -21,14 +23,18 @@ public class Game {
     @Column(name = "added_date")
     private LocalDateTime addedDate = LocalDateTime.now();
 
+    // Default constructor for JPA
     public Game() {}
 
-    public Game(String name, String description, boolean isFavorite) {
+    public Game(Long id, String name, String description, boolean isFavorite, String coverUrl) {
+        this.id = id;
         this.name = name;
         this.description = description;
         this.isFavorite = isFavorite;
+        this.coverUrl = coverUrl;
     }
 
+    // Getters and setters
     public Long getId() {
         return id;
     }
@@ -45,6 +51,14 @@ public class Game {
         this.name = name;
     }
 
+    public String getCoverUrl() {
+        return coverUrl;
+    }
+
+    public void setCoverUrl(String coverUrl) {
+        this.coverUrl = coverUrl;
+    }
+
     public String getDescription() {
         return description;
     }
@@ -59,5 +73,13 @@ public class Game {
 
     public void setFavorite(boolean favorite) {
         isFavorite = favorite;
+    }
+
+    public LocalDateTime getAddedDate() {
+        return addedDate;
+    }
+
+    public void setAddedDate(LocalDateTime addedDate) {
+        this.addedDate = addedDate;
     }
 }

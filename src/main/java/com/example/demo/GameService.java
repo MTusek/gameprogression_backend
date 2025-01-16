@@ -1,10 +1,10 @@
 package com.example.demo;
 
-import com.example.demo.Game;
 import org.springframework.stereotype.Service;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 public class GameService {
@@ -19,11 +19,11 @@ public class GameService {
         return gameRepository.findAll();
     }
 
-    public Game addGame(Game game) {
-        return gameRepository.save(game);
+    public Game findById(Long id) {
+        return gameRepository.findById(id).orElse(null);
     }
 
-    public Game saveGame(Game game) {
+    public Game addGame(Game game) {
         return gameRepository.save(game);
     }
 
@@ -31,7 +31,25 @@ public class GameService {
         gameRepository.deleteById(id);
     }
 
-    public Optional<Game> getGameById(Long id) {
-        return gameRepository.findById(id);
+    public String getImageAsBase64(String imageName) {
+        try (InputStream resource = getImageAsStream(imageName)) {
+            if (resource != null) {
+                byte[] imageBytes = resource.readAllBytes();
+                return "data:image/png;base64," + java.util.Base64.getEncoder().encodeToString(imageBytes);
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+
+    public InputStream getImageAsStream(String imageName) {
+        try {
+            return getClass().getResourceAsStream("/static/images/" + imageName);
+        } catch (Exception e) {
+            e.printStackTrace();
+            return null;
+        }
     }
 }

@@ -1,14 +1,15 @@
 package com.example.demo;
+
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.*;
+import jakarta.servlet.http.HttpServletResponse;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.List;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/games")
@@ -29,8 +30,18 @@ public class GameController {
 
     // GET a game by ID
     @GetMapping("/{id}")
-    public Optional<Game> getGameById(@PathVariable Long id) {
-        return gameService.getGameById(id);
+    public ResponseEntity<Game> getGameById(@PathVariable Long id) {
+        Game game = gameService.findById(id);
+        if (game == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String coverUrl = game.getCoverUrl();
+        if (!coverUrl.startsWith("http")) {
+            coverUrl = "http://localhost:8080/images/" + coverUrl;
+        }
+        game.setCoverUrl(coverUrl);
+
+        return ResponseEntity.ok(game);
     }
 
     // POST a new game
@@ -39,21 +50,22 @@ public class GameController {
         return gameService.addGame(game);
     }
 
-    // PUT (update) an existing game
-    @PutMapping("/{id}")
-    public Game updateGame(@PathVariable Long id, @RequestBody Game updatedGame) {
-        Optional<Game> existingGame = gameService.getGameById(id);
-        if (existingGame.isPresent()) {
-            updatedGame.setId(id);
-            return gameService.saveGame(updatedGame);
-        }
-        throw new RuntimeException("Game not found with ID: " + id);
-    }
-
     // DELETE a game
     @DeleteMapping("/{id}")
-    public void deleteGame(@PathVariable Long id) {
+    public ResponseEntity<Void> deleteGame(@PathVariable Long id) {
         gameService.deleteGame(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    // Serve images in .png format
+    @GetMapping(value = "/images/{imageName}", produces = MediaType.IMAGE_PNG_VALUE)
+    public void downloadImage(@PathVariable("imageName") String imageName, HttpServletResponse response) throws IOException {
+        InputStream resource = gameService.getImageAsStream(imageName);
+        if (resource != null) {
+            response.setContentType(MediaType.IMAGE_PNG_VALUE);
+            StreamUtils.copy(resource, response.getOutputStream());
+        } else {
+            response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
+        }
     }
 }
-
