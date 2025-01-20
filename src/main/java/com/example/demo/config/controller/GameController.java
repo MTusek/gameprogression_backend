@@ -1,5 +1,7 @@
-package com.example.demo;
+package com.example.demo.config.controller;
 
+import com.example.demo.config.service.GameService;
+import com.example.demo.config.model.Game;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
@@ -21,11 +23,33 @@ public class GameController {
     public GameController(GameService gameService) {
         this.gameService = gameService;
     }
-
-    // GET all games
     @GetMapping
-    public List<Game> getAllGames() {
-        return gameService.getAllGames();
+    public ResponseEntity<String> getAllGamesAsHtml() {
+        List<Game> games = gameService.getAllGames();
+
+        StringBuilder htmlBuilder = new StringBuilder();
+        htmlBuilder.append("<html>");
+        htmlBuilder.append("<body>");
+        htmlBuilder.append("<h1>Game List</h1>");
+        htmlBuilder.append("<ul>");
+
+        for (Game game : games) {
+            htmlBuilder.append("<li>");
+            htmlBuilder.append("<h2>").append(game.getName()).append("</h2>");
+            htmlBuilder.append("<p>").append(game.getDescription()).append("</p>");
+            htmlBuilder.append("<img src=\"")
+                    .append(game.getCoverUrl())
+                    .append("\" alt=\"")
+                    .append(game.getName().toLowerCase())
+                    .append("\" style=\"max-width:200px; height:auto;\"/>");
+            htmlBuilder.append("</li>");
+        }
+
+        htmlBuilder.append("</ul>");
+        htmlBuilder.append("</body>");
+        htmlBuilder.append("</html>");
+
+        return ResponseEntity.ok().contentType(MediaType.TEXT_HTML).body(htmlBuilder.toString());
     }
 
     // GET a game by ID

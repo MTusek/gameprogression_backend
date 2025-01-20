@@ -1,5 +1,7 @@
-package com.example.demo;
+package com.example.demo.config.service;
 
+import com.example.demo.config.repo.GameRepository;
+import com.example.demo.config.model.Game;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
