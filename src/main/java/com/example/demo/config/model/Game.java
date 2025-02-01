@@ -7,15 +7,21 @@ import java.time.LocalDateTime;
 @Table(name = "games")
 public class Game {
 
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+
 
     private String name;
 
     private String coverUrl;
 
     private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "user_id", nullable = false)
+    private User user;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
 
     @Column(name = "is_favorite")
     private boolean isFavorite;
@@ -81,5 +87,8 @@ public class Game {
 
     public void setAddedDate(LocalDateTime addedDate) {
         this.addedDate = addedDate;
+    }
+
+    public void setUser(User user) {
     }
 }

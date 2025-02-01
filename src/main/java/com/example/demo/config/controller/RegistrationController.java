@@ -1,12 +1,9 @@
 package com.example.demo.config.controller;
 
+import com.example.demo.config.model.UserRegistration;
 import com.example.demo.config.service.UserService;
-import com.example.demo.config.model.User;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/register")
@@ -19,8 +16,8 @@ public class RegistrationController {
     }
 
     @PostMapping
-    public ResponseEntity<String> register(@RequestBody User user) {
-        userService.registerUser(user);
+    public ResponseEntity<String> register(@RequestBody UserRegistration registration) {
+        userService.registerUser(registration);
         return ResponseEntity.ok("User registered successfully");
     }
 }
